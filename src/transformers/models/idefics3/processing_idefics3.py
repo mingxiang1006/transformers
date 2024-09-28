@@ -286,7 +286,15 @@ class Idefics3Processor(ProcessorMixin):
 
             prompt_strings = []
             for sample, sample_rows, sample_cols in zip(text, image_rows, image_cols):
-                n_images_in_text.append(sample.count(image_token))
+                #n_images_in_text.append(sample.count(image_token))
+                ## update 20240928
+                n_images = sample.count(image_token)
+                n_images_in_text.append(n_images)
+                
+                if n_images == 0:
+                    # If no image tokens, just append the original sample
+                    prompt_strings.append(sample)
+                    continue
 
                 # Replace the image token with fake tokens around the expanded image token sequence of length `image_seq_len`
                 image_prompt_strings = []
@@ -302,8 +310,10 @@ class Idefics3Processor(ProcessorMixin):
                     image_prompt_strings.append(image_prompt_string)
 
                 split_sample = sample.split(image_token)
-                if len(split_sample) == 0:
-                    raise ValueError("The image token should be present in the text.")
+                
+                ## update 20240928
+                # if len(split_sample) == 0:
+                #     raise ValueError("The image token should be present in the text.")
 
                 # Place in the image prompt strings where the image tokens are
                 sample = split_sample[0]
